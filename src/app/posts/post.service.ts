@@ -7,18 +7,20 @@ import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
 export class PostService {
   private posts: Post[] = []; //can't update from outside
-  private postUpdated = new Subject<{posts :Post[], postCount : number}>();
+  private postUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getPosts(pageSize:number, page :number) {
+  getPosts(pageSize: number, page: number) {
     const queryParams = `?pagesize=${pageSize}&page=${page}`;
     this.http
-      .get<{message: string,posts :[], maxpost:number}>('http://localhost:3000/api/posts'+ queryParams)
+      .get<{ message: string; posts: []; maxpost: number }>(
+        'http://localhost:3000/api/posts' + queryParams
+      )
       .pipe(
         map((postData) => {
           return {
-            posts : postData.posts.map((post: any) => {
+            posts: postData.posts.map((post: any) => {
               return {
                 title: post.title,
                 content: post.content,
@@ -26,15 +28,16 @@ export class PostService {
                 imagePath: post.imagePath,
               };
             }),
-            maxPosts : postData.maxpost
-          }
-          
+            maxPosts: postData.maxpost,
+          };
         })
       )
       .subscribe((transformedPostData: any) => {
-        this.posts = transformedPostData.posts
-        this.postUpdated.next({posts: [...this.posts], postCount : transformedPostData.maxPosts});
-        
+        this.posts = transformedPostData.posts;
+        this.postUpdated.next({
+          posts: [...this.posts],
+          postCount: transformedPostData.maxPosts,
+        });
       });
   }
 
@@ -64,14 +67,12 @@ export class PostService {
       )
       .subscribe((res) => {
         this.router.navigate(['/']);
-      })
-    
+      });
   }
 
   deletePost(postId: string) {
     if (confirm('Do you want to delete the post') == true) {
-    return  this.http
-        .delete<any>(`http://localhost:3000/api/posts/${postId}`)
+      return this.http.delete<any>(`http://localhost:3000/api/posts/${postId}`);
     } else {
       return;
     }
@@ -86,7 +87,7 @@ export class PostService {
       postData.append('content', content);
       postData.append('image', image, title);
     } else if (typeof image === 'string') {
-       postData = {
+      postData = {
         id: id,
         title: title,
         content: content,
