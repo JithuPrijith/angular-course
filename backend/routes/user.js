@@ -48,7 +48,7 @@ router.post("/login", (req, res) => {
         "this is super key",
         { expiresIn: "1h" }
       );
-      res.status(200).json({ token: token, expiresIn : 3600 });
+      res.status(200).json({ token: token, expiresIn : 3600, userId : fetchedUser._id });
     })
     .catch((err) => {
       return res.status(404).json({ message: "user not found or Auth failed" });

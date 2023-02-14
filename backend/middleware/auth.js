@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  console.log(req.headers["authorization"]);
   try {
     const token = req.headers.authorization.split(" ")[1];
-    jwt.verify(token, "this is super key");
+    const decodedToken = jwt.verify(token, "this is super key");
+    req.userData = { email: decodedToken.email, userId :decodedToken.userId}
     next();
   } catch (error) {
     res.status(401).json({ message: "authorization failed" });

@@ -20,6 +20,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   isLoading = false;
   authStatusSub!: Subscription;
   userIsAuthenticated = false;
+  userId!: string | null;
 
   constructor(
     public postService: PostService,
@@ -40,7 +41,9 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.authStatusSub = this.authService
       .getAuthStatusListener()
       .subscribe((isAuthenticated) => {
+        console.log(isAuthenticated,"..");
         this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
   }
 
