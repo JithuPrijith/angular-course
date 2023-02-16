@@ -6,9 +6,10 @@ const userRoute = require("../backend/routes/user");
 const path = require("path");
 
 const app = express();
+
 mongoose
   .connect(
-    "mongodb+srv://prijithpeter:admin123@cluster0.e5wbdut.mongodb.net/node-angular"
+    "mongodb+srv://prijithpeter:"+process.env.MONGO_PASSWORD+"@cluster0.e5wbdut.mongodb.net/node-angular"
   )
   .then(() => console.log("mongo connected"))
   .catch(() => console.log("mongo failed"));
