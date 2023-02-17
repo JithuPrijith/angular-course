@@ -122,7 +122,7 @@ export class AuthService {
     const userId = localStorage.getItem('userId');
     const expiration = localStorage.getItem('expiration');
     if (!token || !expiration) {
-      return;
+      return
     }
     return {
       token: token,
