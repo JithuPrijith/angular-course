@@ -12,7 +12,7 @@ import { PostService } from '../post.service';
 })
 export class PostListComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
-  private postSub: Subscription = new Subscription();
+  private postSub!: Subscription;
   totalPosts: number = 0;
   postsPerPage = 2;
   pageSizeOptions = [1, 2, 5, 10];
@@ -20,6 +20,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   isLoading = false;
   authStatusSub!: Subscription;
   userIsAuthenticated = false;
+  userId!: string | null;
 
   constructor(
     public postService: PostService,
@@ -29,6 +30,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.postService.getPosts(this.postsPerPage, this.currentPage);
+    this.userId=this.authService.getUserId();
     this.postSub = this.postService
       .getPostUpdateListener()
       .subscribe((postData: { posts: Post[]; postCount: number }) => {
@@ -41,23 +43,27 @@ export class PostListComponent implements OnInit, OnDestroy {
       .getAuthStatusListener()
       .subscribe((isAuthenticated) => {
         this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
-  }
-
-  ngOnDestroy() {
-    this.postSub.unsubscribe();
-    this.authStatusSub.unsubscribe();
   }
 
   onDelete(id: string) {
     this.postService.deletePost(id)?.subscribe(() => {
       this.postService.getPosts(this.postsPerPage, this.currentPage);
+    }, 
+    (error) => {
+      this.isLoading = false;
     });
   }
 
   onPageChange(event: PageEvent) {
+    this.isLoading=true;
     this.currentPage = event.pageIndex + 1;
     this.postsPerPage = event.pageSize;
     this.postService.getPosts(this.postsPerPage, this.currentPage);
+  }
+  ngOnDestroy() {
+    this.postSub.unsubscribe();
+    this.authStatusSub.unsubscribe();
   }
 }
